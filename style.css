@@ -30,3 +30,83 @@ body {
   background: var(--paper);
   color: var(--charcoal);
 }
+
+@keyframes subir {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+.topo {
+  position: relative;
+  overflow: hidden;
+  color: var(--paper);
+  padding: 72px 20px 128px;
+  background:
+    radial-gradient(900px 420px at 88% -10%, rgba(159, 232, 112, 0.38), transparent 62%),
+    radial-gradient(700px 480px at 0% 115%, rgba(5, 77, 40, 0.95), transparent 62%),
+    var(--forest);
+}
+
+.topo::before,
+.topo::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.topo::before {
+  width: 560px; height: 560px;
+  right: -170px; top: -230px;
+  border: 2px solid rgba(159, 232, 112, 0.30);
+  box-shadow: inset 0 0 0 46px rgba(159, 232, 112, 0.05);
+  animation: girar 90s linear infinite;
+}
+.topo::after {
+  width: 380px; height: 380px;
+  left: -140px; bottom: -190px;
+  border: 46px solid rgba(5, 77, 40, 0.70);
+}
+.topo-conteudo {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+.topo-conteudo::before {
+  content: "27 estados  •  mapa interativo  •  melhores datas";
+  display: inline-block;
+  margin-bottom: 28px;
+  padding: 8px 20px;
+  border-radius: 9999px;
+  background: rgba(159, 232, 112, 0.14);
+  border: 1px solid rgba(159, 232, 112, 0.55);
+  color: var(--lime);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  animation: subir 0.7s ease backwards;
+}
+.marca {
+  font-weight: 900;
+  font-size: clamp(2.8rem, 11vw, 7.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--lime);
+  animation: subir 0.8s ease 0.1s backwards;
+}
+.topo p {
+  max-width: 580px;
+  margin: 28px auto 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.88);
+  animation: subir 0.8s ease 0.25s backwards;
+}
