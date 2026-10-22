@@ -40,6 +40,36 @@
       <div id="vazio" class="vazio">
         <p>Escolha um estado no menu acima ou clique em um marcador no mapa para montar o seu roteiro.</p>
       </div>
+
+      <div id="resultado" hidden>
+        <h2 id="nomeEstado"></h2>
+        <p id="regiao" class="regiao"></p>
+
+        <section id="aba-cidades" class="conteudo-aba ativa">
+          <h3>Cidades sugeridas</h3>
+          <ul id="cidades"></ul>
+          <h3>Melhores meses para ir</h3>
+          <div id="melhoresMeses" class="meses"></div>
+          <a href="#secaoFotos" id="verFotos" class="btn-fotos">Ver fotos <span>↓</span></a>
+        </section>
+
+        <section id="aba-datas" class="conteudo-aba">
+          <h3>Feriadões nos meses ideais</h3>
+          <p class="aviso">Feriados em segunda, terça, quinta ou sexta que caem em meses bons para viajar.</p>
+          <ul id="sugestoes" class="lista-feriados"></ul>
+        </section>
+
+        <section id="aba-feriados" class="conteudo-aba">
+          <h3>Todos os feriados do ano</h3>
+          <p class="legenda">
+            <span class="tag bom">mês ideal</span>
+            <span class="tag feriadao">feriadão</span>
+            <span class="tag emenda">possível emenda</span>
+          </p>
+          <ul id="feriados" class="lista-feriados"></ul>
+          <p class="aviso">Feriados nacionais vêm da BrasilAPI. O feriado estadual foi cadastrado no código; confirme antes de viajar.</p>
+        </section>
+      </div>
     </aside>
   </main>
 </body>
