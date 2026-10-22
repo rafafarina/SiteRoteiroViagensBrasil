@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roteiro Brasil | Viagens pelo Brasil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo" id="topo">
+    <div class="topo-conteudo">
+      <div class="marca">Roteiro Brasil</div>
+      <p>Descubra cidades, passeios e as melhores datas para viajar em cada estado.</p>
+    </div>
+  </header>
+
+  <section class="filtros">
+    <label>Estado
+      <select id="estado"><option value="">Carregando...</option></select>
+    </label>
+    <label>Ano
+      <select id="ano"></select>
+    </label>
+    <button id="buscar">Ver roteiro</button>
+    <button id="verBrasil" class="secundario">Ver Brasil todo</button>
+  </section>
+
+  <p id="mensagem"></p>
+
+  <main class="layout">
+    <div id="mapa"></div>
+    
+    <aside class="painel">
+      <div class="abas">
+        <button class="aba ativa" data-aba="cidades">Cidades</button>
+        <button class="aba" data-aba="datas">Melhores datas</button>
+        <button class="aba" data-aba="feriados">Feriados</button>
+      </div>
+      
+      <div id="vazio" class="vazio">
+        <p>Escolha um estado no menu acima ou clique em um marcador no mapa para montar o seu roteiro.</p>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>
