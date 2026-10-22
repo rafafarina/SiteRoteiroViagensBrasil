@@ -278,3 +278,52 @@ h3 { margin: 28px 0 12px; font-size: 1.125rem; font-weight: 800; color: var(--ob
   font-size: 4rem;
   animation: flutuar 3s ease-in-out infinite;
 }
+
+#cidades { list-style: none; padding: 0; margin: 0; }
+#cidades li {
+  background: var(--fog);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  color: var(--forest);
+  transition: transform 0.25s;
+}
+#cidades li:hover {
+  background: var(--linen);
+  transform: translateX(6px);
+  border: 1px solid var(--lime);
+}
+
+.meses { display: flex; flex-wrap: wrap; gap: 8px; }
+.mes {
+  background: var(--forest);
+  color: var(--lime);
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.lista-feriados { list-style: none; padding: 0; margin: 0; }
+.lista-feriados li {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--fog);
+  font-size: 0.95rem;
+}
+.lista-feriados li.ideal {
+  background: var(--linen);
+  border-radius: 12px;
+  border-bottom-color: transparent;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  margin-left: 6px;
+}
+.tag.bom { background: var(--lime); color: var(--forest); }
+.tag.feriadao { background: var(--forest); color: var(--lime); }
