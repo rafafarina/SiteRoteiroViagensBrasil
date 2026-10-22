@@ -27,18 +27,3 @@ O código-fonte e os arquivos do projeto estão disponíveis no GitHub.
 
 https://github.com/rafafarina/SiteRoteiroViagensBrasil
 
-
-Diário de uso de IA
-Registro 1
-Integrante:
-Data:
-Prompt utilizado:
-Alteração feita:
-
-
-Registro 2
-Integrante: Rafael Farina  
-Data: 22/10/26
-Prompt utilizado: "Me ajude a criar um README.md para o projeto Roteiro Brasil, explicando o objetivo do site, suas principais funcionalidades e as tecnologias utilizadas, com base nos códigos HTML, CSS e JavaScript desenvolvidos pela equipe."
-
-Alteração feita: Utilizei a IA como auxílio na elaboração e organização da documentação do projeto, criando uma descrição mais clara e objetiva para o README.md.
