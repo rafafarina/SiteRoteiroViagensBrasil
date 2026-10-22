@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+:root {
+  --forest: #163300;
+  --lime: #9fe870;
+  --lime-claro: #b4f08c;
+  --spruce: #054d28;
+  --linen: #e2f6d5;
+  --obsidian: #0e0f0c;
+  --charcoal: #454745;
+  --slate: #6a6c6a;
+  --pebble: #868685;
+  --fog: #e8ebe6;
+  --paper: #ffffff;
+  --hairline: 0 0 0 1px rgba(14, 15, 12, 0.10);
+  --sombra-lg: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --sombra-xl: 0 10px 32px rgba(0, 0, 0, 0.15), 0 40px 40px rgba(0, 0, 0, 0.04);
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  background: var(--paper);
+  color: var(--charcoal);
+}
