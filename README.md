@@ -1,29 +1,16 @@
-
 Roteiro Brasil
-Sobre o projeto
 
-O Roteiro Brasil é um site desenvolvido para ajudar pessoas a planejar viagens pelo Brasil. A ideia é reunir informações sobre destinos turísticos, cidades, atrações e melhores períodos para viajar, facilitando a escolha dos próximos roteiros.
+O Roteiro Brasil é um site que ajuda pessoas a planejar viagens pelo Brasil, reunindo destinos turísticos, atrações, feriados e melhores períodos para viajar. É voltado para quem deseja descobrir novos lugares e organizar viagens de férias, feriados ou fins de semana.
 
-Funcionalidades
-Mapa interativo: permite visualizar cidades turísticas e conhecer algumas de suas principais atrações.
-Consulta de destinos: apresenta cidades sugeridas para cada estado e os meses recomendados para visitá-las.
-Feriados e melhores datas: permite consultar feriados nacionais e estaduais e encontrar oportunidades para planejar viagens em feriados prolongados.
-Galeria de fotos: exibe imagens dos destinos para que o usuário possa conhecer melhor os lugares antes de viajar.
-Tecnologias utilizadas
+Como executar
 
-O projeto foi desenvolvido com HTML, CSS e JavaScript. Também utiliza a biblioteca Leaflet e os mapas da Esri para a visualização dos destinos, a BrasilAPI para consultar estados e feriados nacionais e o Wikimedia Commons para buscar fotografias dos locais.
+Acesse o repositório do projeto no GitHub, baixe os arquivos e abra o index.html em um navegador.
 
-Objetivo
+GitHub Pages: adicionar o link caso o site esteja publicado.
 
-O objetivo do Roteiro Brasil é facilitar o planejamento de viagens nacionais, reunindo informações úteis em um só lugar e ajudando os usuários a descobrir novos destinos e aproveitar melhor seu tempo livre.
-
-Público-alvo
-
-O site é voltado para pessoas que gostam de viajar, conhecer novos lugares e explorar as diferentes regiões do Brasil, seja durante as férias, feriados ou viagens de fim de semana.
-
-Repositório
-
-O código-fonte e os arquivos do projeto estão disponíveis no GitHub.
-
-https://github.com/rafafarina/SiteRoteiroViagensBrasil
-
+Integrantes e responsabilidades
+Livia Ramos: estilização e identidade visual do site com CSS.
+Rafael Farina: documentação e organização do README.md.
+Giovanni: melhorias visuais, cores, animações e efeitos de interação no CSS.
+Vanildo Filho: responsividade do layout com media queries, adaptando a disposição dos elementos para dispositivos móveis.
+João Marcomini: ajustes de usabilidade e organização dos componentes, incluindo campos de seleção e botões.
