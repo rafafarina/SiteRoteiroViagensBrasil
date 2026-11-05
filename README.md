@@ -9,8 +9,8 @@ Acesse o repositório do projeto no GitHub, baixe os arquivos e abra o index.htm
 GitHub Pages: adicionar o link caso o site esteja publicado.
 
 Integrantes e responsabilidades
-Livia Ramos: estilização e identidade visual do site com CSS.
+Lívia Ramos: criação do JS e HTML com o auxilio do restante do grupo.
 Rafael Farina: documentação e organização do README.md.
-Giovanni: melhorias visuais, cores, animações e efeitos de interação no CSS.
+Giovanni: estilização e identidade visual do site com CSS.
 Vanildo Filho: responsividade do layout com media queries, adaptando a disposição dos elementos para dispositivos móveis.
 João Marcomini: ajustes de usabilidade e organização dos componentes, incluindo campos de seleção e botões.
