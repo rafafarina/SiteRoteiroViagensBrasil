@@ -1,3 +1,10 @@
+/* ==========================================================
+   ROTEIRO BRASIL - versão "uau"
+   Inspirado no design da Wise: verde floresta + lima, pílulas,
+   títulos pesados. Mantém tudo do layout original e adiciona
+   profundidade, animações e detalhes. (Só CSS, sem mexer no HTML)
+   ========================================================== */
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
 
 * { box-sizing: border-box; }
@@ -31,6 +38,7 @@ body {
   color: var(--charcoal);
 }
 
+/* ---------- ANIMAÇÕES ---------- */
 @keyframes subir {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: none; }
@@ -43,6 +51,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ---------- TOPO (hero escuro) ---------- */
 .topo {
   position: relative;
   overflow: hidden;
@@ -53,6 +62,7 @@ body {
     radial-gradient(700px 480px at 0% 115%, rgba(5, 77, 40, 0.95), transparent 62%),
     var(--forest);
 }
+/* círculos decorativos (lembram um globo) */
 .topo::before,
 .topo::after {
   content: "";
@@ -79,6 +89,7 @@ body {
   margin: 0 auto;
   text-align: center;
 }
+/* selo em pílula acima do título */
 .topo-conteudo::before {
   content: "27 estados  •  mapa interativo  •  melhores datas";
   display: inline-block;
@@ -110,6 +121,7 @@ body {
   animation: subir 0.8s ease 0.25s backwards;
 }
 
+/* ---------- FILTROS (cartão flutuante sobre o hero) ---------- */
 .filtros {
   position: relative;
   z-index: 2;
@@ -164,6 +176,7 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* botão principal: lima */
 .filtros button {
   background: var(--lime);
   color: var(--forest);
@@ -180,6 +193,7 @@ button:focus-visible {
 }
 .filtros button:active { transform: translateY(0); box-shadow: none; }
 
+/* botão secundário: contorno */
 .filtros button.secundario {
   background: transparent;
   color: var(--forest);
@@ -191,6 +205,7 @@ button:focus-visible {
   box-shadow: 0 10px 22px rgba(22, 51, 0, 0.25);
 }
 
+/* mensagem de erro / aviso */
 #mensagem:empty { display: none; }
 #mensagem {
   width: fit-content;
@@ -204,6 +219,7 @@ button:focus-visible {
   animation: subir 0.4s ease backwards;
 }
 
+/* ---------- LAYOUT: mapa + painel ---------- */
 .layout {
   max-width: 1200px;
   margin: 40px auto 72px;
@@ -220,6 +236,7 @@ button:focus-visible {
   animation: subir 0.9s ease 0.45s backwards;
 }
 .leaflet-container { font-family: inherit; }
+/* marcadores azuis -> verde da marca, com sombra */
 .leaflet-marker-icon {
   filter: hue-rotate(-105deg) saturate(1.15) drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
   transition: filter 0.2s;
@@ -235,6 +252,7 @@ button:focus-visible {
 .leaflet-popup-content { margin: 14px 18px; font-size: 0.95rem; line-height: 1.4; }
 .leaflet-popup-content b { font-size: 1.05rem; }
 
+/* ---------- PAINEL COM ABAS ---------- */
 .painel {
   background: var(--paper);
   border-radius: 28px;
@@ -308,6 +326,7 @@ h3 {
   animation: flutuar 3s ease-in-out infinite;
 }
 
+/* ---------- CIDADES ---------- */
 #cidades { list-style: none; padding: 0; margin: 0; }
 #cidades li {
   position: relative;
@@ -353,6 +372,7 @@ h3 {
 #cidades li:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
 #cidades li span { font-size: 0.9rem; color: var(--slate); }
 
+/* meses = tags escuras com texto lima */
 .meses { display: flex; flex-wrap: wrap; gap: 8px; }
 .mes {
   background: var(--forest);
@@ -365,6 +385,7 @@ h3 {
 }
 .mes:hover { transform: translateY(-2px) scale(1.05); background: var(--lime); color: var(--forest); }
 
+/* ---------- FERIADOS ---------- */
 .lista-feriados { list-style: none; padding: 0; margin: 0; }
 .lista-feriados li {
   padding: 14px 12px;
@@ -396,6 +417,7 @@ h3 {
 
 .aviso { font-size: 0.82rem; color: var(--slate); }
 
+/* ---------- GALERIA DE FOTOS ---------- */
 .galeria {
   display: flex;
   gap: 12px;
@@ -439,6 +461,8 @@ h3 {
 .galeria a:hover::after { opacity: 1; transform: none; }
 .galeria p { color: var(--slate); font-size: 0.9rem; }
 
+
+/* ---------- BOTÃO "VER FOTOS" (dentro do painel) ---------- */
 .btn-fotos {
   display: inline-flex;
   align-items: center;
@@ -460,6 +484,7 @@ h3 {
 }
 .btn-fotos:hover span { transform: translateY(3px); }
 
+/* ---------- SEÇÃO DE FOTOS (no fim da página) ---------- */
 .secao-fotos {
   background: var(--spruce);
   padding: 72px 20px 64px;
@@ -493,6 +518,103 @@ h3 {
 }
 .btn-topo:hover { background: var(--lime); color: var(--forest); transform: translateY(-2px); }
 
+
+/* ---------- MESES CLICÁVEIS (aba Cidades) ---------- */
+#melhoresMeses {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 8px;
+}
+.mes-btn {
+  padding: 10px 8px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--fog);
+  background: var(--paper);
+  color: var(--charcoal);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.mes-btn:hover { transform: translateY(-2px); border-color: var(--forest); }
+.mes-btn.ideal { background: var(--lime); border-color: var(--lime); color: var(--forest); }
+.mes-btn.ideal::before { content: "★ "; }
+.mes-btn.sel {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--lime);
+  box-shadow: 0 0 0 4px rgba(159, 232, 112, 0.45);
+}
+
+/* legenda dos meses */
+.legenda-meses {
+  list-style: none;
+  margin: 16px 0 8px;
+  padding: 14px 16px;
+  background: var(--fog);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--charcoal);
+}
+.pt {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border-radius: 50%;
+  vertical-align: -2px;
+}
+.pt.lima { background: var(--lime); }
+.pt.escuro { background: var(--forest); }
+.pt.branco { background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--pebble); }
+
+/* cidade escolhida na lista */
+#cidades li.sel { background: var(--linen); border-color: var(--forest); }
+
+/* ---------- ABA MELHORES DATAS ---------- */
+.resumo-mes {
+  margin: 4px 0 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--fog);
+  color: var(--charcoal);
+  font-size: 0.92rem;
+}
+.resumo-mes.ideal { background: var(--lime); color: var(--forest); font-weight: 600; }
+.lista-feriados .detalhe {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--slate);
+}
+.tag.neutra { background: var(--fog); color: var(--charcoal); }
+
+/* ---------- FERIADOS: busca e destaque ---------- */
+#buscaFeriado {
+  width: 100%;
+  margin: 4px 0 12px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--pebble);
+  font: inherit;
+  color: var(--forest);
+}
+#buscaFeriado:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 4px rgba(159, 232, 112, 0.55);
+}
+#aba-feriados .lista-feriados li { cursor: pointer; }
+.lista-feriados li.destaque {
+  background: var(--linen);
+  box-shadow: inset 4px 0 0 var(--lime);
+  font-weight: 600;
+}
+
+/* ---------- RODAPÉ (seção escura invertida) ---------- */
 footer {
   text-align: center;
   padding: 44px 20px;
@@ -502,12 +624,17 @@ footer {
   font-size: 0.9rem;
 }
 
+/* ---------- LISTA DO SELECT (Chrome/Edge recentes) ----------
+   A lista nativa do select é desenhada pelo navegador e não aceita altura
+   em CSS comum. O "base-select" libera isso: a lista passa a ficar DENTRO
+   da página, com altura máxima e a mesma cara do site. Navegadores sem
+   suporte ignoram este bloco e continuam com a lista padrão. */
 @supports (appearance: base-select) {
   select,
   select::picker(select) { appearance: base-select; }
 
   select::picker(select) {
-    max-height: 280px;
+    max-height: 280px;            /* <- altura máxima da lista: mude aqui */
     margin-top: 8px;
     padding: 8px;
     border: none;
@@ -536,6 +663,7 @@ footer {
   select option::checkmark { display: none; }
 }
 
+/* ---------- CELULAR ---------- */
 @media (max-width: 900px) {
   .topo { padding: 56px 20px 112px; }
   .layout { grid-template-columns: 1fr; }
@@ -549,6 +677,7 @@ footer {
   #resultado h2 { font-size: 2rem; }
 }
 
+/* respeita quem prefere menos movimento */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

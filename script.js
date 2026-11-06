@@ -1,4 +1,6 @@
-// 1) DADOS DOS ESTADOS
+// 1) DADOS DOS ESTADOS (feitos por nós)
+// melhores = meses ideais (1 a 12) | feriado = data estadual
+// cidades = [nome, latitude, longitude, passeio turístico]
 var estados = {
   AC: { melhores: [6,7,8,9], feriado: { mes: 6, dia: 15, nome: "Aniversário do Acre" }, cidades: [
     ["Rio Branco", -9.97, -67.81, "Palácio Rio Branco e Gameleira",
@@ -131,15 +133,18 @@ L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_M
   attribution: "Tiles &copy; Esri"
 }).addTo(mapa);
 
-var marcadores = {};
+var marcadores = {}; // sigla -> lista de marcadores
 
 for (const sigla in estados) {
   marcadores[sigla] = [];
-  estados[sigla].cidades.forEach(function (c) {
+  estados[sigla].cidades.forEach(function (c, idx) {
     var m = L.marker([c[1], c[2]]).addTo(mapa);
     m.bindPopup("<b>" + c[0] + " (" + sigla + ")</b><br>" + c[3]);
+    // clicar no marcador seleciona o estado e a cidade clicada
     m.on("click", function () {
       selectEstado.value = sigla;
+      cidadeEscolhida = idx;
+      estadoAtualSigla = sigla;
       montarRoteiro();
     });
     marcadores[sigla].push(m);
@@ -164,19 +169,7 @@ async function carregarEstados() {
       op.textContent = uf.nome + " (" + uf.sigla + ")";
       selectEstado.appendChild(op);
     });
-
-    var estadoSalvo = localStorage.getItem("estadoSelecionado");
-    var anoSalvo = localStorage.getItem("anoSelecionado");
-
-    if (anoSalvo) {
-      selectAno.value = anoSalvo;
-    }
-    
-    if (estadoSalvo && estados[estadoSalvo]) {
-      selectEstado.value = estadoSalvo;
-      montarRoteiro();
-    }
-
+    restaurarEscolhas();   // devolve o que a pessoa tinha escolhido da última vez
   } catch (erro) {
     selectEstado.innerHTML = '<option value="">Erro ao carregar</option>';
     mensagem.textContent = "Não foi possível carregar os estados da BrasilAPI. Verifique a internet.";
@@ -192,7 +185,7 @@ async function buscarFeriados(ano) {
 }
 
 // FOTOS - Wikimedia Commons (sem chave)
-var ultimaBusca = "";
+var ultimaBusca = ""; // evita mostrar foto de cidade antiga se a pessoa clicar rápido
 
 async function buscarFotos(termo) {
   var url = "https://commons.wikimedia.org/w/api.php?action=query&generator=search" +
@@ -211,8 +204,9 @@ async function buscarFotos(termo) {
 
   var fotos = [];
   paginas.forEach(function (p) {
-    if (!p.imageinfo) return; 
+    if (!p.imageinfo) return; // proteção: página sem info de imagem
     var info = p.imageinfo[0];
+    // só fotos JPEG (pelo tipo real do arquivo)
     if (info.mime === "image/jpeg" && info.thumburl) {
       fotos.push({ url: info.thumburl, pagina: info.descriptionurl, titulo: p.title.replace("File:", "") });
     }
@@ -222,10 +216,10 @@ async function buscarFotos(termo) {
 
 async function carregarFotos(nomeLocal, arquivos) {
   var galeria = document.getElementById("galeria");
-  var termo = nomeLocal.replace(/\(.*\)/, "").trim(); 
+  var termo = nomeLocal.replace(/\(.*\)/, "").trim(); // tira "(Eixo Monumental)"
   ultimaBusca = termo;
 
-  document.getElementById("secaoFotos").hidden = false; 
+  document.getElementById("secaoFotos").hidden = false; // mostra a seção de fotos no fim da página
 
   document.getElementById("tituloFotos").textContent = "Fotos de " + termo;
   galeria.innerHTML = "<p>Carregando fotos...</p>";
@@ -233,6 +227,7 @@ async function carregarFotos(nomeLocal, arquivos) {
   try {
     var fotos;
     if (arquivos && arquivos.length > 0) {
+      // fotos ESCOLHIDAS por você (5º item da cidade em "estados")
       fotos = arquivos.map(function (nome) {
         var arq = encodeURIComponent(nome.replace(/ /g, "_"));
         return {
@@ -242,10 +237,11 @@ async function carregarFotos(nomeLocal, arquivos) {
         };
       });
     } else {
+      // sem fotos escolhidas: busca automática
       fotos = await buscarFotos(termo + " Brasil");
-      if (fotos.length === 0) fotos = await buscarFotos(termo); 
+      if (fotos.length === 0) fotos = await buscarFotos(termo);   // plano B
     }
-    if (ultimaBusca !== termo) return;
+    if (ultimaBusca !== termo) return; // chegou atrasada, ignora
 
     galeria.innerHTML = "";
     if (fotos.length === 0) {
@@ -254,7 +250,7 @@ async function carregarFotos(nomeLocal, arquivos) {
     }
     fotos.slice(0, 10).forEach(function (f) {
       var link = document.createElement("a");
-      link.href = f.pagina;
+      link.href = f.pagina;   // página com autor e licença
       link.target = "_blank";
       var img = document.createElement("img");
       img.src = f.url;
@@ -271,7 +267,7 @@ async function carregarFotos(nomeLocal, arquivos) {
 
 // 5) FUNÇÕES AUXILIARES
 function criarData(texto) {
-  var p = texto.split("-");
+  var p = texto.split("-"); // "2026-12-25"
   return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
 }
 
@@ -288,6 +284,74 @@ function adicionarTag(li, texto, classe) {
   li.appendChild(tag);
 }
 
+// ESCOLHAS DA PESSOA (ficam guardadas no navegador, com localStorage)
+var CHAVE_SALVA = "roteiroBrasil";
+var abaAtual = "cidades";
+var mesEscolhido = 0;       // 1 a 12 (0 = nenhum mês escolhido)
+var cidadeEscolhida = 0;    // posição da cidade na lista do estado
+var estadoAtualSigla = "";
+var feriadosAtuais = [];    // feriados do ano (BrasilAPI + estadual)
+var statusFeriados = "";    // "carregando", "ok" ou "erro"
+var contadorFeriados = 0;   // evita que uma resposta antiga sobrescreva a nova
+
+var nomesDiasCurtos = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+
+function salvarEscolhas() {
+  try {
+    localStorage.setItem(CHAVE_SALVA, JSON.stringify({
+      estado: selectEstado.value,
+      ano: selectAno.value,
+      mes: mesEscolhido,
+      cidade: cidadeEscolhida,
+      aba: abaAtual
+    }));
+  } catch (erro) {
+    console.error(erro);
+  }
+}
+
+function lerEscolhas() {
+  try {
+    return JSON.parse(localStorage.getItem(CHAVE_SALVA)) || {};
+  } catch (erro) {
+    return {};
+  }
+}
+
+// AUXILIARES DE DATA
+function somarDias(data, n) {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate() + n);
+}
+
+function dataCurta(data) {
+  var dia = String(data.getDate()).padStart(2, "0");
+  var mes = String(data.getMonth() + 1).padStart(2, "0");
+  return dia + "/" + mes;
+}
+
+function periodo(inicio, fim) {
+  return nomesDiasCurtos[inicio.getDay()] + " " + dataCurta(inicio) +
+         " a " + nomesDiasCurtos[fim.getDay()] + " " + dataCurta(fim);
+}
+
+// diz o quanto um feriado rende, de acordo com o dia da semana
+// ordem: 0 = melhor, 3 = pior (usada para ordenar a lista)
+function classificarFeriado(data) {
+  var dia = data.getDay();
+  if (dia === 1) return { ordem: 0, tag: "feriadão", classe: "feriadao",
+    detalhe: "Fim de semana de 3 dias: " + periodo(somarDias(data, -2), data) };
+  if (dia === 5) return { ordem: 0, tag: "feriadão", classe: "feriadao",
+    detalhe: "Fim de semana de 3 dias: " + periodo(data, somarDias(data, 2)) };
+  if (dia === 2) return { ordem: 1, tag: "possível emenda", classe: "emenda",
+    detalhe: "Emendando a segunda, dá 4 dias: " + periodo(somarDias(data, -3), data) };
+  if (dia === 4) return { ordem: 1, tag: "possível emenda", classe: "emenda",
+    detalhe: "Emendando a sexta, dá 4 dias: " + periodo(data, somarDias(data, 3)) };
+  if (dia === 3) return { ordem: 2, tag: "meio de semana", classe: "neutra",
+    detalhe: "Cai na quarta: só compensa com mais dias de folga." };
+  return { ordem: 3, tag: "fim de semana", classe: "neutra",
+    detalhe: "Cai no fim de semana: não ganha dia de folga." };
+}
+
 // 6) MONTANDO O ROTEIRO
 async function montarRoteiro() {
   mensagem.textContent = "";
@@ -296,18 +360,36 @@ async function montarRoteiro() {
     mensagem.textContent = "Escolha um estado primeiro.";
     return;
   }
-  
-  localStorage.setItem("estadoSelecionado", sigla);
-  localStorage.setItem("anoSelecionado", selectAno.value);
-
   var estado = estados[sigla];
-  var ano = Number(selectAno.value);
 
+  // trocou de estado: volta para a 1ª cidade
+  if (sigla !== estadoAtualSigla) {
+    cidadeEscolhida = 0;
+    estadoAtualSigla = sigla;
+  }
+  if (cidadeEscolhida >= estado.cidades.length) cidadeEscolhida = 0;
+
+  // mapa: aproxima das cidades do estado
   var pontos = estado.cidades.map(function (c) { return [c[1], c[2]]; });
   mapa.flyToBounds(pontos, { padding: [60, 60], maxZoom: 9 });
-  marcadores[sigla][0].openPopup();
+  marcadores[sigla][cidadeEscolhida].openPopup();
 
   mostrarEstado(sigla, estado);
+  salvarEscolhas();
+  await atualizarFeriados();
+  resultado.hidden = false;
+}
+
+// busca os feriados na BrasilAPI e atualiza as listas (também usada ao trocar o ano)
+async function atualizarFeriados() {
+  var sigla = selectEstado.value;
+  if (sigla === "") return;
+  var estado = estados[sigla];
+  var ano = Number(selectAno.value);
+  var minhaVez = ++contadorFeriados;
+
+  statusFeriados = "carregando";
+  mostrarDatasDoMes();
 
   try {
     var nacionais = await buscarFeriados(ano);
@@ -322,12 +404,18 @@ async function montarRoteiro() {
       });
     }
     lista.sort(function (x, y) { return x.data - y.data; });
+    if (minhaVez !== contadorFeriados) return;   // chegou atrasada, ignora
+    feriadosAtuais = lista;
+    statusFeriados = "ok";
     mostrarFeriados(lista, estado);
-    resultado.hidden = false;
   } catch (erro) {
+    if (minhaVez !== contadorFeriados) return;
+    feriadosAtuais = [];
+    statusFeriados = "erro";
     mensagem.textContent = "Não foi possível carregar os feriados. Tente de novo.";
     console.error(erro);
   }
+  mostrarDatasDoMes();
 }
 
 function mostrarEstado(sigla, estado) {
@@ -340,33 +428,146 @@ function mostrarEstado(sigla, estado) {
     var li = document.createElement("li");
     li.innerHTML = "<b>📍 " + c[0] + "</b><span>" + c[3] + "</span>";
     li.title = "Clique para ver no mapa";
+    if (i === cidadeEscolhida) li.classList.add("sel");
     li.addEventListener("click", function () {
-      mapa.flyTo([c[1], c[2]], 11);
-      marcadores[sigla][i].openPopup();
-      carregarFotos(c[0], c[4]);
+      selecionarCidade(sigla, i);
     });
     ul.appendChild(li);
   });
 
+  // meses: os 12, todos clicáveis; os ideais do estado ficam marcados
   var box = document.getElementById("melhoresMeses");
   box.innerHTML = "";
-  estado.melhores.slice().sort(function (a, b) { return a - b; }).forEach(function (m) {
-    var span = document.createElement("span");
-    span.className = "mes";
-    span.textContent = nomesMeses[m - 1];
-    box.appendChild(span);
+  nomesMeses.forEach(function (nome, i) {
+    var mes = i + 1;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mes-btn";
+    btn.dataset.mes = mes;
+    btn.textContent = nome;
+    if (estado.melhores.indexOf(mes) !== -1) {
+      btn.classList.add("ideal");
+      btn.title = "Mês ideal para viajar";
+    }
+    btn.addEventListener("click", function () { escolherMes(mes); });
+    box.appendChild(btn);
   });
+  marcarMesEscolhido();
+
   document.getElementById("vazio").hidden = true;
   resultado.hidden = false;
 
-  carregarFotos(estado.cidades[0][0], estado.cidades[0][4]);
+  var cidade = estado.cidades[cidadeEscolhida];
+  carregarFotos(cidade[0], cidade[4]);   // fotos da cidade escolhida
+}
+
+function selecionarCidade(sigla, i) {
+  var c = estados[sigla].cidades[i];
+  cidadeEscolhida = i;
+  mapa.flyTo([c[1], c[2]], 11);
+  marcadores[sigla][i].openPopup();
+  carregarFotos(c[0], c[4]);   // troca as fotos ao clicar na cidade
+  document.querySelectorAll("#cidades li").forEach(function (li, pos) {
+    li.classList.toggle("sel", pos === i);
+  });
+  salvarEscolhas();
+}
+
+// clicar num mês: marca o mês, mostra as melhores datas e vai para a aba "Melhores datas"
+function escolherMes(mes) {
+  mesEscolhido = mes;
+  marcarMesEscolhido();
+  mostrarDatasDoMes();
+  mostrarAba("datas");   // já salva as escolhas
+  document.querySelector(".painel").scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function marcarMesEscolhido() {
+  document.querySelectorAll(".mes-btn").forEach(function (b) {
+    var sel = Number(b.dataset.mes) === mesEscolhido;
+    b.classList.toggle("sel", sel);
+    b.setAttribute("aria-pressed", sel ? "true" : "false");
+  });
+}
+
+// ABA "MELHORES DATAS": as melhores datas dentro do mês escolhido
+function mostrarDatasDoMes() {
+  var titulo = document.getElementById("tituloDatas");
+  var resumo = document.getElementById("resumoMes");
+  var ul = document.getElementById("sugestoes");
+  var tituloFds = document.getElementById("tituloFds");
+  var fds = document.getElementById("fimDeSemana");
+  ul.innerHTML = "";
+  fds.innerHTML = "";
+  resumo.className = "resumo-mes";
+
+  var sigla = selectEstado.value;
+  if (sigla === "" || mesEscolhido === 0) {
+    titulo.textContent = "Melhores datas";
+    resumo.textContent = "Escolha um mês na aba 📍 Cidades para ver as melhores datas dele.";
+    tituloFds.hidden = true;
+    return;
+  }
+
+  var estado = estados[sigla];
+  var nomeEstado = estado.nome || sigla;
+  var nomeMes = nomesMeses[mesEscolhido - 1];
+  var ano = Number(selectAno.value);
+  var ideal = estado.melhores.indexOf(mesEscolhido) !== -1;
+
+  titulo.textContent = "Melhores datas em " + nomeMes + " de " + ano;
+  if (ideal) {
+    resumo.textContent = "★ " + nomeMes + " é um mês ideal para viajar para " + nomeEstado + ".";
+    resumo.classList.add("ideal");
+  } else {
+    resumo.textContent = nomeMes + " não está entre os meses ideais para " + nomeEstado +
+      ". Os meses ideais aparecem marcados com ★ na aba 📍 Cidades.";
+  }
+
+  // feriados do mês, os que rendem mais folga primeiro
+  if (statusFeriados === "carregando") {
+    ul.innerHTML = "<li>Carregando feriados...</li>";
+  } else if (statusFeriados === "erro") {
+    ul.innerHTML = "<li>Não foi possível carregar os feriados. Os fins de semana abaixo continuam valendo.</li>";
+  } else {
+    var doMes = feriadosAtuais
+      .filter(function (f) { return f.data.getMonth() + 1 === mesEscolhido; })
+      .map(function (f) { return { f: f, c: classificarFeriado(f.data) }; });
+    doMes.sort(function (x, y) { return (x.c.ordem - y.c.ordem) || (x.f.data - y.f.data); });
+
+    if (doMes.length === 0) {
+      ul.innerHTML = "<li>Nenhum feriado em " + nomeMes + ". Veja os fins de semana abaixo.</li>";
+    }
+    doMes.forEach(function (item) {
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(formatar(item.f.data) + " - " + item.f.nome));
+      adicionarTag(li, item.c.tag, item.c.classe);
+      var detalhe = document.createElement("span");
+      detalhe.className = "detalhe";
+      detalhe.textContent = item.c.detalhe;
+      li.appendChild(detalhe);
+      if (item.c.ordem <= 1) li.className = "ideal";
+      ul.appendChild(li);
+    });
+  }
+
+  // fins de semana do mês
+  tituloFds.hidden = false;
+  var ultimoDia = new Date(ano, mesEscolhido, 0).getDate();
+  for (var d = 1; d <= ultimoDia; d++) {
+    var sabado = new Date(ano, mesEscolhido - 1, d);
+    if (sabado.getDay() !== 6) continue;
+    var chip = document.createElement("span");
+    chip.className = "mes";
+    chip.textContent = "sáb " + dataCurta(sabado) + " e dom " + dataCurta(somarDias(sabado, 1));
+    fds.appendChild(chip);
+  }
 }
 
 function mostrarFeriados(lista, estado) {
   var ul = document.getElementById("feriados");
-  var ulSug = document.getElementById("sugestoes");
   ul.innerHTML = "";
-  ulSug.innerHTML = "";
+  document.getElementById("buscaFeriado").value = "";   // limpa a busca ao refazer a lista
 
   lista.forEach(function (f) {
     var li = document.createElement("li");
@@ -386,41 +587,83 @@ function mostrarFeriados(lista, estado) {
     if (longo) adicionarTag(li, "feriadão", "feriadao");
     if (emenda) adicionarTag(li, "possível emenda", "emenda");
 
+    // evento CLICK: destaca o feriado clicado
+    li.title = "Clique para destacar";
+    li.addEventListener("click", function () {
+      li.classList.toggle("destaque");
+    });
+
     ul.appendChild(li);
-
-    if (ideal && (longo || emenda)) {
-      var copia = li.cloneNode(true);
-      copia.className = "";
-      ulSug.appendChild(copia);
-    }
   });
-
-  if (ulSug.children.length === 0) {
-    var vazio = document.createElement("li");
-    vazio.textContent = "Nenhum feriadão cai nos meses ideais neste ano. Tente outro ano ou viaje nos meses ideais mesmo sem feriado.";
-    ulSug.appendChild(vazio);
-  }
 }
 
 // 7) EVENTOS
 document.getElementById("buscar").addEventListener("click", montarRoteiro);
 selectEstado.addEventListener("change", montarRoteiro);
+selectAno.addEventListener("change", function () {
+  atualizarFeriados();   // recarrega os feriados do novo ano
+  salvarEscolhas();
+});
 document.getElementById("verBrasil").addEventListener("click", function () {
   mapa.flyTo([-14.2, -51.9], 4);
   mapa.closePopup();
 });
 
+// evento INPUT: filtra a lista de feriados enquanto a pessoa digita
+var campoBusca = document.getElementById("buscaFeriado");
+campoBusca.addEventListener("input", function () {
+  var texto = this.value.toLowerCase();
+  document.querySelectorAll("#feriados li").forEach(function (li) {
+    li.hidden = li.textContent.toLowerCase().indexOf(texto) === -1;
+  });
+});
+// evento KEYDOWN: a tecla Esc limpa a busca
+campoBusca.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    this.value = "";
+    this.dispatchEvent(new Event("input"));
+  }
+});
+
 // ABAS DO MENU
 function mostrarAba(nome) {
+  abaAtual = nome;
   document.querySelectorAll(".aba").forEach(function (b) {
     b.classList.toggle("ativa", b.dataset.aba === nome);
   });
   document.querySelectorAll(".conteudo-aba").forEach(function (sec) {
     sec.classList.toggle("ativa", sec.id === "aba-" + nome);
   });
+  salvarEscolhas();
 }
 document.querySelectorAll(".aba").forEach(function (b) {
   b.addEventListener("click", function () { mostrarAba(b.dataset.aba); });
 });
+
+// VOLTA AS ESCOLHAS SALVAS (estado, ano, mês, cidade e aba)
+async function restaurarEscolhas() {
+  try {
+    var salvo = lerEscolhas();
+
+    if (salvo.ano) {
+      var existe = Array.prototype.some.call(selectAno.options, function (o) {
+        return o.value === String(salvo.ano);
+      });
+      if (existe) selectAno.value = salvo.ano;
+    }
+    if (!salvo.estado || !estados[salvo.estado]) return;
+
+    mesEscolhido = Number(salvo.mes) || 0;
+    cidadeEscolhida = Number(salvo.cidade) || 0;
+    estadoAtualSigla = salvo.estado;   // evita voltar para a 1ª cidade
+    selectEstado.value = salvo.estado;
+
+    var pronto = montarRoteiro();
+    mostrarAba(salvo.aba || "cidades");
+    await pronto;
+  } catch (erro) {
+    console.error(erro);
+  }
+}
 
 carregarEstados();

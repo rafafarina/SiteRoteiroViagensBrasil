@@ -10,7 +10,7 @@
 <body>
   <header class="topo" id="topo">
     <div class="topo-conteudo">
-      <div class="marca">Roteiro Brasil</div>
+      <div class="marca">🧭 Roteiro Brasil</div>
       <p>Descubra cidades, passeios e as melhores datas para viajar em cada estado.</p>
     </div>
   </header>
@@ -30,15 +30,16 @@
 
   <main class="layout">
     <div id="mapa"></div>
-    
+
     <aside class="painel">
       <div class="abas">
-        <button class="aba ativa" data-aba="cidades">Cidades</button>
-        <button class="aba" data-aba="datas">Melhores datas</button>
-        <button class="aba" data-aba="feriados">Feriados</button>
+        <button class="aba ativa" data-aba="cidades">📍 Cidades</button>
+        <button class="aba" data-aba="datas">⭐ Melhores datas</button>
+        <button class="aba" data-aba="feriados">🎉 Feriados</button>
       </div>
-      
+
       <div id="vazio" class="vazio">
+        <p>🗺️</p>
         <p>Escolha um estado no menu acima ou clique em um marcador no mapa para montar o seu roteiro.</p>
       </div>
 
@@ -49,15 +50,23 @@
         <section id="aba-cidades" class="conteudo-aba ativa">
           <h3>Cidades sugeridas</h3>
           <ul id="cidades"></ul>
-          <h3>Melhores meses para ir</h3>
+          <h3>Escolha um mês para ir</h3>
+          <p class="aviso">Clique em um mês para ver as melhores datas dele na aba ⭐ Melhores datas.</p>
           <div id="melhoresMeses" class="meses"></div>
-          <a href="#secaoFotos" id="verFotos" class="btn-fotos">Ver fotos <span>↓</span></a>
+          <ul class="legenda-meses">
+            <li><span class="pt lima"></span><b>★ Mês ideal:</b> melhor época para visitar o estado, considerando principalmente o clima e a época dos passeios.</li>
+            <li><span class="pt escuro"></span><b>Mês escolhido:</b> é o que aparece na aba ⭐ Melhores datas.</li>
+            <li><span class="pt branco"></span><b>Demais meses:</b> fora da melhor época, mas dá para ir.</li>
+          </ul>
+          <p class="aviso">Os meses ideais foram cadastrados no código; confirme antes de viajar.</p>
         </section>
 
         <section id="aba-datas" class="conteudo-aba">
-          <h3>Feriadões nos meses ideais</h3>
-          <p class="aviso">Feriados em segunda, terça, quinta ou sexta que caem em meses bons para viajar.</p>
+          <h3 id="tituloDatas">Melhores datas</h3>
+          <p id="resumoMes" class="resumo-mes"></p>
           <ul id="sugestoes" class="lista-feriados"></ul>
+          <h3 id="tituloFds" hidden>Fins de semana do mês</h3>
+          <div id="fimDeSemana" class="meses"></div>
         </section>
 
         <section id="aba-feriados" class="conteudo-aba">
@@ -67,8 +76,10 @@
             <span class="tag feriadao">feriadão</span>
             <span class="tag emenda">possível emenda</span>
           </p>
+          <input type="text" id="buscaFeriado" placeholder="🔎 Buscar feriado...">
           <ul id="feriados" class="lista-feriados"></ul>
           <p class="aviso">Feriados nacionais vêm da BrasilAPI. O feriado estadual foi cadastrado no código; confirme antes de viajar.</p>
+          <a href="#secaoFotos" id="verFotos" class="btn-fotos">📷 Ver fotos <span>↓</span></a>
         </section>
       </div>
     </aside>
