@@ -1,4 +1,4 @@
-// 1) DADOS DOS ESTADOS (feitos por nós)
+// 1) DADOS DOS ESTADOS
 // melhores = meses ideais (1 a 12) | feriado = data estadual
 // cidades = [nome, latitude, longitude, passeio turístico]
 var estados = {
@@ -126,21 +126,21 @@ for (var a = anoAtual; a <= anoAtual + 2; a++) {
   selectAno.appendChild(opAno);
 }
 
-// 3) MAPA (biblioteca Leaflet + mapa da Esri)
+// 3) MAPA (Leaflet + mapa da Esri)
 var mapa = L.map("mapa").setView([-14.2, -51.9], 4);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
   maxZoom: 18,
   attribution: "Tiles &copy; Esri"
 }).addTo(mapa);
 
-var marcadores = {}; // sigla -> lista de marcadores
+var marcadores = {}; //lista de marcadores
 
 for (const sigla in estados) {
   marcadores[sigla] = [];
   estados[sigla].cidades.forEach(function (c, idx) {
     var m = L.marker([c[1], c[2]]).addTo(mapa);
     m.bindPopup("<b>" + c[0] + " (" + sigla + ")</b><br>" + c[3]);
-    // clicar no marcador seleciona o estado e a cidade clicada
+    // clicar no marcador seleciona o estado e a cidade 
     m.on("click", function () {
       selectEstado.value = sigla;
       cidadeEscolhida = idx;
@@ -151,7 +151,7 @@ for (const sigla in estados) {
   });
 }
 
-// 4) BRASILAPI - lista de estados: https://brasilapi.com.br/api/ibge/uf/v1
+// 4) BRASILAPI - https://brasilapi.com.br/api/ibge/uf/v1
 async function carregarEstados() {
   try {
     var resposta = await fetch("https://brasilapi.com.br/api/ibge/uf/v1");
@@ -169,7 +169,8 @@ async function carregarEstados() {
       op.textContent = uf.nome + " (" + uf.sigla + ")";
       selectEstado.appendChild(op);
     });
-    restaurarEscolhas();   // devolve o que a pessoa tinha escolhido da última vez
+    await restaurarEscolhas();   // devolve o que tinha escolhido da última vez
+    atualizarSelectFavoritos();  // marca com coração os estados no menu
   } catch (erro) {
     selectEstado.innerHTML = '<option value="">Erro ao carregar</option>';
     mensagem.textContent = "Não foi possível carregar os estados da BrasilAPI. Verifique a internet.";
@@ -177,15 +178,15 @@ async function carregarEstados() {
   }
 }
 
-// BrasilAPI - feriados nacionais: https://brasilapi.com.br/api/feriados/v1/{ano}
+// BrasilAPI - https://brasilapi.com.br/api/feriados/v1/{ano}
 async function buscarFeriados(ano) {
   var resposta = await fetch("https://brasilapi.com.br/api/feriados/v1/" + ano);
   if (!resposta.ok) throw new Error("Erro ao buscar feriados: " + resposta.status);
   return await resposta.json(); // [{ date, name, type }]
 }
 
-// FOTOS - Wikimedia Commons (sem chave)
-var ultimaBusca = ""; // evita mostrar foto de cidade antiga se a pessoa clicar rápido
+// FOTOS - Wikimedia Commons 
+var ultimaBusca = ""; 
 
 async function buscarFotos(termo) {
   var url = "https://commons.wikimedia.org/w/api.php?action=query&generator=search" +
@@ -204,9 +205,9 @@ async function buscarFotos(termo) {
 
   var fotos = [];
   paginas.forEach(function (p) {
-    if (!p.imageinfo) return; // proteção: página sem info de imagem
+    if (!p.imageinfo) return;
     var info = p.imageinfo[0];
-    // só fotos JPEG (pelo tipo real do arquivo)
+    // só fotos JPEG 
     if (info.mime === "image/jpeg" && info.thumburl) {
       fotos.push({ url: info.thumburl, pagina: info.descriptionurl, titulo: p.title.replace("File:", "") });
     }
@@ -241,7 +242,7 @@ async function carregarFotos(nomeLocal, arquivos) {
       fotos = await buscarFotos(termo + " Brasil");
       if (fotos.length === 0) fotos = await buscarFotos(termo);   // plano B
     }
-    if (ultimaBusca !== termo) return; // chegou atrasada, ignora
+    if (ultimaBusca !== termo) return;
 
     galeria.innerHTML = "";
     if (fotos.length === 0) {
@@ -267,7 +268,7 @@ async function carregarFotos(nomeLocal, arquivos) {
 
 // 5) FUNÇÕES AUXILIARES
 function criarData(texto) {
-  var p = texto.split("-"); // "2026-12-25"
+  var p = texto.split("-");
   return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
 }
 
@@ -284,7 +285,7 @@ function adicionarTag(li, texto, classe) {
   li.appendChild(tag);
 }
 
-// ESCOLHAS DA PESSOA (ficam guardadas no navegador, com localStorage)
+// ESCOLHAS DA PESSOA (ficam guardadas no navegador)
 var CHAVE_SALVA = "roteiroBrasil";
 var abaAtual = "cidades";
 var mesEscolhido = 0;       // 1 a 12 (0 = nenhum mês escolhido)
@@ -316,6 +317,47 @@ function lerEscolhas() {
   } catch (erro) {
     return {};
   }
+}
+
+// FAVORITOS (salvos no navegador)
+var CHAVE_FAVORITOS = "roteiroBrasilFavoritos";
+
+function lerFavoritos() {
+  try {
+    return JSON.parse(localStorage.getItem(CHAVE_FAVORITOS)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function alternarFavorito(sigla) {
+  if (!sigla) return;
+  var favs = lerFavoritos();
+  var idx = favs.indexOf(sigla);
+  if (idx === -1) {
+    favs.push(sigla);
+  } else {
+    favs.splice(idx, 1);
+  }
+  localStorage.setItem(CHAVE_FAVORITOS, JSON.stringify(favs));
+  atualizarBotaoFavorito(sigla);
+  atualizarSelectFavoritos();
+}
+
+function atualizarBotaoFavorito(sigla) {
+  var btn = document.getElementById("btnFavorito");
+  var favoritado = lerFavoritos().indexOf(sigla) !== -1;
+  btn.classList.toggle("ativo", favoritado);
+  btn.title = favoritado ? "Remover dos favoritos" : "Favoritar estado";
+}
+
+function atualizarSelectFavoritos() {
+  var favs = lerFavoritos();
+  Array.prototype.forEach.call(selectEstado.options, function (op) {
+    if (!op.value || !estados[op.value]) return;
+    var base = estados[op.value].nome + " (" + op.value + ")";
+    op.textContent = favs.indexOf(op.value) !== -1 ? "♥ " + base : base;
+  });
 }
 
 // AUXILIARES DE DATA
@@ -420,6 +462,7 @@ async function atualizarFeriados() {
 
 function mostrarEstado(sigla, estado) {
   document.getElementById("nomeEstado").textContent = (estado.nome || sigla) + " (" + sigla + ")";
+  atualizarBotaoFavorito(sigla); // atualiza o coraçãozinho ao abrir o estado
   document.getElementById("regiao").textContent = "Região " + (estado.regiao || "");
 
   var ul = document.getElementById("cidades");
@@ -524,7 +567,7 @@ function mostrarDatasDoMes() {
       ". Os meses ideais aparecem marcados com ★ na aba 📍 Cidades.";
   }
 
-  // feriados do mês, os que rendem mais folga primeiro
+  // feriados do mês
   if (statusFeriados === "carregando") {
     ul.innerHTML = "<li>Carregando feriados...</li>";
   } else if (statusFeriados === "erro") {
@@ -607,6 +650,32 @@ selectAno.addEventListener("change", function () {
 document.getElementById("verBrasil").addEventListener("click", function () {
   mapa.flyTo([-14.2, -51.9], 4);
   mapa.closePopup();
+});
+document.getElementById("irParaFeriados").addEventListener("click", function () {
+  mostrarAba("feriados");
+  document.querySelector(".painel").scrollTo({ top: 0, behavior: "smooth" });
+});
+document.getElementById("btnFavorito").addEventListener("click", function () {
+  alternarFavorito(selectEstado.value);
+});
+
+/*--------- DARK E LIGHT ---------*/
+var CHAVE_TEMA = "roteiroBrasilTema";
+var btnTema = document.getElementById("btnTema");
+
+function aplicarTema(escuro) {
+  document.body.classList.toggle("dark", escuro);
+  btnTema.innerHTML = escuro ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+  btnTema.title = escuro ? "Mudar para tema claro" : "Mudar para tema escuro";
+  if (window.lucide) lucide.createIcons();
+}
+
+aplicarTema(localStorage.getItem(CHAVE_TEMA) === "dark");
+
+btnTema.addEventListener("click", function () {
+  var vaiParaEscuro = !document.body.classList.contains("dark");
+  localStorage.setItem(CHAVE_TEMA, vaiParaEscuro ? "dark" : "light");
+  aplicarTema(vaiParaEscuro);
 });
 
 // evento INPUT: filtra a lista de feriados enquanto a pessoa digita

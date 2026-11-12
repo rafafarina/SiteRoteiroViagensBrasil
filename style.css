@@ -1,10 +1,3 @@
-/* ==========================================================
-   ROTEIRO BRASIL - versão "uau"
-   Inspirado no design da Wise: verde floresta + lima, pílulas,
-   títulos pesados. Mantém tudo do layout original e adiciona
-   profundidade, animações e detalhes. (Só CSS, sem mexer no HTML)
-   ========================================================== */
-
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
 
 * { box-sizing: border-box; }
@@ -27,6 +20,105 @@ html { scroll-behavior: smooth; }
   --sombra-lg: 0 6px 20px rgba(0, 0, 0, 0.08);
   --sombra-xl: 0 10px 32px rgba(0, 0, 0, 0.15), 0 40px 40px rgba(0, 0, 0, 0.04);
 }
+
+/*------- BODY DARK --------*/
+body.dark {
+  --paper: #141a12;        
+  --fog: #1f291c;          
+  --linen: #263621;        
+  --charcoal: #d5dcd2;    
+  --obsidian: #f3f7f1;     
+  --slate: #9aa696;        
+  --forest: #9fe870;      
+  --sombra-xl: 0 10px 32px rgba(0, 0, 0, 0.55);
+}
+
+body.dark .topo {
+  background: 
+    radial-gradient(900px 420px at 88% -10%, rgba(159, 232, 112, 0.22), transparent 62%),
+    #0b1407;
+}
+body.dark .abas {
+  background: rgba(20, 26, 18, 0.92);
+}
+
+body.dark .filtros button.secundario {
+  background: transparent !important;
+  color: var(--lime) !important;
+  border: 1.5px solid var(--lime);
+}
+body.dark .filtros button.secundario:hover {
+  background: var(--lime) !important;
+  color: #163300 !important;
+}
+
+body.dark .aba.ativa,
+body.dark #buscar,
+body.dark .btn-fotos,
+body.dark .btn-ir-feriados,
+body.dark .mes-btn.ideal,
+body.dark .mes,
+body.dark .mes:hover,
+body.dark .tag.feriadao,
+body.dark .btn-topo:hover,
+body.dark select option:checked,
+body.dark .resumo-mes.ideal,
+body.dark .tag.bom {
+  color: #163300 !important;
+}
+
+body.dark .mes-btn.sel {
+  background: #0d4a2b !important;
+  border: 2px solid var(--lime) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(159, 232, 112, 0.28);
+}
+
+body.dark .mes:hover {
+  background: var(--lime-claro);
+}
+body.dark .lista-feriados li:hover {
+  background: #1c2419;
+}
+body.dark #buscaFeriado {
+  background: var(--fog);
+}
+/* ---------- CORES DO RODAPÉ NO MODO ESCURO ---------- */
+body.dark .rodape-secao span,
+body.dark .rodape-secao svg,
+body.dark .lista-creditos li,
+body.dark .rodape-bottom p,
+body.dark .rodape-secao h4 {
+  color: #0e0f0c; 
+}
+
+body.dark .rodape-secao strong,
+body.dark .lista-creditos strong {
+  color: #054d28; 
+}
+.btn-tema {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(159, 232, 112, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--lime);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-tema:hover {
+  background: rgba(159, 232, 112, 0.2);
+  transform: scale(1.08);
+}
+/*------- FIM DO DARK --------*/
 
 body {
   margin: 0;
@@ -51,7 +143,14 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* ---------- TOPO (hero escuro) ---------- */
+[data-lucide] {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  stroke-width: 2;
+}
+
+/* ---------- TOPO (escuro) ---------- */
 .topo {
   position: relative;
   overflow: hidden;
@@ -62,7 +161,7 @@ body {
     radial-gradient(700px 480px at 0% 115%, rgba(5, 77, 40, 0.95), transparent 62%),
     var(--forest);
 }
-/* círculos decorativos (lembram um globo) */
+/* círculos decorativos */
 .topo::before,
 .topo::after {
   content: "";
@@ -89,7 +188,7 @@ body {
   margin: 0 auto;
   text-align: center;
 }
-/* selo em pílula acima do título */
+
 .topo-conteudo::before {
   content: "27 estados  •  mapa interativo  •  melhores datas";
   display: inline-block;
@@ -121,7 +220,7 @@ body {
   animation: subir 0.8s ease 0.25s backwards;
 }
 
-/* ---------- FILTROS (cartão flutuante sobre o hero) ---------- */
+/* ---------- FILTROS (cartão flutuante) ---------- */
 .filtros {
   position: relative;
   z-index: 2;
@@ -176,7 +275,7 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* botão principal: lima */
+/* botão principal */
 .filtros button {
   background: var(--lime);
   color: var(--forest);
@@ -193,7 +292,7 @@ button:focus-visible {
 }
 .filtros button:active { transform: translateY(0); box-shadow: none; }
 
-/* botão secundário: contorno */
+/* botão secundário */
 .filtros button.secundario {
   background: transparent;
   color: var(--forest);
@@ -205,7 +304,7 @@ button:focus-visible {
   box-shadow: 0 10px 22px rgba(22, 51, 0, 0.25);
 }
 
-/* mensagem de erro / aviso */
+/* mensagem de erro */
 #mensagem:empty { display: none; }
 #mensagem {
   width: fit-content;
@@ -236,7 +335,7 @@ button:focus-visible {
   animation: subir 0.9s ease 0.45s backwards;
 }
 .leaflet-container { font-family: inherit; }
-/* marcadores azuis -> verde da marca, com sombra */
+/* marcadores azuis - verde da marca com sombra */
 .leaflet-marker-icon {
   filter: hue-rotate(-105deg) saturate(1.15) drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
   transition: filter 0.2s;
@@ -306,6 +405,46 @@ button:focus-visible {
   margin-top: 14px;
   border-radius: 9999px;
   background: var(--lime);
+}
+.cabecalho-estado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.btn-favorito {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  margin-top: 12px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--fog);
+  background: var(--fog);
+  color: var(--slate);
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn-favorito svg {
+  width: 16px;
+  height: 16px;
+  transition: fill 0.2s, transform 0.2s;
+}
+.btn-favorito:hover {
+  border-color: #e11d48;
+  color: #e11d48;
+  transform: scale(1.08);
+}
+.btn-favorito.ativo {
+  background: #ffe4e6;
+  border-color: #e11d48;
+  color: #e11d48;
+}
+.btn-favorito.ativo svg {
+  fill: #e11d48;
+  transform: scale(1.1);
 }
 .regiao { margin: 12px 0 8px; color: var(--slate); font-weight: 500; }
 h3 {
@@ -461,8 +600,29 @@ h3 {
 .galeria a:hover::after { opacity: 1; transform: none; }
 .galeria p { color: var(--slate); font-size: 0.9rem; }
 
+/*----------- BOTÃO DE "FERIADOS"-------------*/
+.btn-ir-feriados {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: none;
+  background: var(--lime);
+  color: var(--forest);
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.btn-ir-feriados:hover {
+  background: var(--lime-claro);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(159, 232, 112, 0.55);
+}
 
-/* ---------- BOTÃO "VER FOTOS" (dentro do painel) ---------- */
+/* ---------- BOTÃO "VER FOTOS" ---------- */
 .btn-fotos {
   display: inline-flex;
   align-items: center;
@@ -484,7 +644,7 @@ h3 {
 }
 .btn-fotos:hover span { transform: translateY(3px); }
 
-/* ---------- SEÇÃO DE FOTOS (no fim da página) ---------- */
+/* ---------- SEÇÃO DE FOTOS ---------- */
 .secao-fotos {
   background: var(--spruce);
   padding: 72px 20px 64px;
@@ -519,7 +679,7 @@ h3 {
 .btn-topo:hover { background: var(--lime); color: var(--forest); transform: translateY(-2px); }
 
 
-/* ---------- MESES CLICÁVEIS (aba Cidades) ---------- */
+/* ---------- MESES CLICÁVEIS ---------- */
 #melhoresMeses {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -592,7 +752,7 @@ h3 {
 }
 .tag.neutra { background: var(--fog); color: var(--charcoal); }
 
-/* ---------- FERIADOS: busca e destaque ---------- */
+/* ---------- FERIADOS ---------- */
 #buscaFeriado {
   width: 100%;
   margin: 4px 0 12px;
@@ -614,27 +774,47 @@ h3 {
   font-weight: 600;
 }
 
-/* ---------- RODAPÉ (seção escura invertida) ---------- */
-footer {
-  text-align: center;
-  padding: 44px 20px;
+/* ---------- RODAPÉ ---------- */
+.rodape-simples {
   background: var(--forest);
-  border-top: 6px solid var(--lime);
+  border-top: 4px solid var(--lime);
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.9rem;
+  padding: 20px;
+  font-size: 0.88rem;
 }
 
-/* ---------- LISTA DO SELECT (Chrome/Edge recentes) ----------
-   A lista nativa do select é desenhada pelo navegador e não aceita altura
-   em CSS comum. O "base-select" libera isso: a lista passa a ficar DENTRO
-   da página, com altura máxima e a mesma cara do site. Navegadores sem
-   suporte ignoram este bloco e continuam com a lista padrão. */
+.rodape-conteudo {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  text-align: center;
+}
+
+.rodape-conteudo strong {
+  color: var(--lime);
+}
+
+.rodape-conteudo [data-lucide] {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+}
+
+.divisor {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ---------- LISTA DO SELECT ---------- */
 @supports (appearance: base-select) {
   select,
   select::picker(select) { appearance: base-select; }
 
   select::picker(select) {
-    max-height: 280px;            /* <- altura máxima da lista: mude aqui */
+    max-height: 280px;
     margin-top: 8px;
     padding: 8px;
     border: none;
@@ -675,9 +855,4 @@ footer {
   .filtros button { flex: 1 1 auto; }
   .topo-conteudo::before { font-size: 0.75rem; padding: 7px 14px; }
   #resultado h2 { font-size: 2rem; }
-}
-
-/* respeita quem prefere menos movimento */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
