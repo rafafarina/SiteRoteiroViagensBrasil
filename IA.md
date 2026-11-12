@@ -29,3 +29,19 @@ Prompt: "Como ajustar o CSS com media queries para adaptar o mapa, o painel de i
 Resposta: adaptar a disposição e as dimensões dos componentes para melhorar a navegação em diferentes telas.
 Aceitei: as sugestões de responsividade; utilizei-as como referência para adaptar o layout.
 Rejeitei: alterações que comprometiam a organização visual; mantive os ajustes compatíveis com o restante do projeto.
+
+12/11 - Lívia Ramos - Claude
+Prompt: "feat: adiciona modo dark/light, favoritos e navegação rápida para feriados
+
+- Implementa alternância de tema (Dark/Light) com persistência no localStorage
+- Adiciona botão de favoritar estados (ícone de coração) com indicador no select
+- Cria botão "Ir para Feriados" na aba Melhores datas
+- Corrige estrutura, alinhamento e contraste de cores do rodapé"
+
+12/11 - Lívia Ramos - Gemini Pro
+Prompt: "### Novas Funcionalidades e Melhorias
+
+* **Modo Dark / Light:** Botão no cabeçalho para alternar entre tema claro e escuro, salvando a preferência do usuário no `localStorage` e ajustando o contraste dos elementos e do rodapé.
+* **Favoritar Estados:** Adicionado botão de coração ao lado do nome do estado para salvar destinos favoritos no navegador e destacá-los com `♥` no menu de seleção.
+* **Navegação Rápida:** Adicionado botão **"Ir para Feriados"** na aba *Melhores datas* para alternar diretamente para a lista completa de feriados.
+* **Ajustes de Layout (Footer):** Correção na estrutura HTML e organização visual das seções de desenvolvimento e créditos no rodapé."
