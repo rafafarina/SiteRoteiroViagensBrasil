@@ -3,7 +3,7 @@ Diário de Uso de IA — Projeto Roteiro Brasil
 
 Prompt: "Como estruturar semanticamente o HTML5 do site Roteiro Brasil separando o cabeçalho, os filtros de estado e ano, o mapa interativo, as abas de informações e a galeria de fotos?"
 
-Resposta: Sugeriu a divisão do documento utilizando tags semânticas (<header>, <main>, <section>, <nav> e <aside>) para isolar cada módulo visual e facilitar a estilização e a navegação.
+Resposta: Sugeriu a divisão do documento utilizando tags semânticas (header, main, section, nav e aside) para isolar cada módulo visual e facilitar a estilização e a navegação.
 
 Aceitei: A divisão modular da página em seções semânticas, que serviu de base para organizarmos a estrutura inicial do index.html.
 
